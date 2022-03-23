@@ -1,3 +1,5 @@
+import utils from "./utils";
+
 const canvas = document.querySelector("canvas");
 const c = canvas.getContext("2d");
 
@@ -19,12 +21,16 @@ addEventListener("resize", () => {
   canvas.height = innerHeight;
 });
 
+const gravity = 0.9;
+const friction = 0.8;
+
 class Ball {
-  constructor(x, y, radius, color) {
+  constructor(x, y, radius, ac, color) {
     this.x = x;
     this.y = y;
     this.radius = radius;
     this.color = color;
+    this.ac = ac;
   }
   draw() {
     c.beginPath();
@@ -35,11 +41,29 @@ class Ball {
   }
   update() {
     this.draw();
+    if (this.y + this.radius > canvas.height) {
+      this.ac = -this.ac * friction;
+    } else {
+      this.ac += gravity;
+    }
+    this.y += this.ac;
   }
 }
 var ball;
+var ballsArray = [];
 function init() {
-  ball = new Ball(canvas.width / 2, canvas.height / 2, 30, "red");
+  for (let i = 0; i < 200; i++) {
+    ballsArray.push(
+      new Ball(
+        utils.randomIntFromRange(0, canvas.width),
+        utils.randomIntFromRange(0, canvas.height),
+        utils.randomIntFromRange(1, 35),
+        0.1,
+        "red"
+      )
+    );
+    ball = new Ball(canvas.width / 2, canvas.height / 2, 30, 0.1, "red");
+  }
 }
 
 function animate() {
